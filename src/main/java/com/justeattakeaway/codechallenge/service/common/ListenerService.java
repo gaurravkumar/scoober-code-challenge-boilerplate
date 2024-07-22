@@ -28,7 +28,6 @@ public class ListenerService {
         container.setMissingQueuesFatal(false);
         container.setMessageListener(new MessageListener() {
             public void onMessage(Message message) {
-                System.out.println("Received message: " + new String(message.getBody()));
                 var gameProgress = gameProgressPersistence.getgameById(gameId);
                 if (gameProgress == null) {
                     gameProgress = new GameProgress();

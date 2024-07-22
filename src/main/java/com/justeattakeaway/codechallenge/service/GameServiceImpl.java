@@ -10,6 +10,8 @@ import com.justeattakeaway.codechallenge.repository.GamePersistence;
 import com.justeattakeaway.codechallenge.repository.GameProgressPersistence;
 import com.justeattakeaway.codechallenge.service.common.ListenerService;
 import com.justeattakeaway.codechallenge.service.common.MessageSenderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,9 @@ import java.util.Random;
 
 @Service
 public class GameServiceImpl implements GameService {
+
+    private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
+
     private GamePersistence gamePersistence;
 
     private PlayerService playerService;
@@ -80,7 +85,6 @@ public class GameServiceImpl implements GameService {
 
         Game game = Game.builder()
                 .players(List.of(gameCreationRequest.getLoginName()))
-                //.numbers(List.of(gameCreationRequest.getCurrentNumber()))
                 .inputType(gameCreationRequest.getInputType())
                 .gameOwner(gameCreationRequest.getLoginName())
                 .build();
@@ -96,16 +100,12 @@ public class GameServiceImpl implements GameService {
     }
 
     public List<Game> getAllActiveGames() {
-        // Get all active games from MongoDB and return them
         return gamePersistence.findAllActiveGames();
     }
 
     public Game joinGame(JoinGameRequest joinGameRequest, String gameId) {
         // Get the game from MongoDB using gameId. Add the player from JoinGameRequest to the game. Save the game in MongoDB. Return the game object
         var game = gamePersistence.findAllActiveGames().stream().filter(g -> g.getId().equals(gameId)).findFirst().orElseThrow();
-        var gameCreatorPlayer = playerService.getPlayerByUniqueLoginName(game.getPlayers().get(0));
-        var player = playerService.getPlayerByUniqueLoginName(joinGameRequest.getPlayer());
-//        listenerService.listenToQueue(gameCreatorPlayer.getQueueName(), gameId, player.getUniqueLoginName());
         if(game.getPlayers() != null && (game.getPlayers().size() == 2 || game.getPlayers().contains(joinGameRequest.getPlayer()))) {
             return game;
         }
@@ -136,11 +136,10 @@ public class GameServiceImpl implements GameService {
         var player = playerService.getPlayerByUniqueLoginName(loginName);
         messageSenderService.sendMessage(player.getQueueName(), move.getResult() / 3);
         listenerService.listenToQueue(player.getQueueName(), gameId, player.getUniqueLoginName());
-        // Player player = playerService.getPlayerByUniqueLoginName(moveRequest.getPlayerUniqueName());
         moveResponse.setResult(move.getResult());
         moveResponse.setAdded(move.getAdded());
         moveResponse.setFinished(false);
-
+        logger.info("Move made by player: " + loginName + " resulting in number: " + move.getResult() + " by adding: " + move.getAdded());
         return moveResponse;
     }
 
