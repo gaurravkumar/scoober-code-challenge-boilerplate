@@ -105,4 +105,25 @@ class ScrooberGameControllerTest {
                 .andExpect(jsonPath("$.result").value(10))
                 .andExpect(jsonPath("$.added").value(1));
     }
+
+    // Write test for createGame method...
+    @Test
+    void createGame() throws Exception {
+        GameCreationRequest request = new GameCreationRequest();
+        request.setLoginName("john123");
+        request.setInputType(InputType.MANUAL);
+
+        GameCreationResponse game = GameCreationResponse.builder()
+                .id("1")
+                .gameOwner("john123")
+                .inputType(InputType.MANUAL)
+                .build();
+
+        when(gameService.createGame(request)).thenReturn(game);
+
+        mockMvc.perform(post("/game/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"gameOwner\":\"john123\",\"inputType\":\"MANUAL\"}"))
+                .andExpect(status().isOk());
+    }
 }
