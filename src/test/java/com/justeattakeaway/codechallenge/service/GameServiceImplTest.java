@@ -150,7 +150,7 @@ class GameServiceImplTest {
         Game game = new Game();
         game.setId("1");
         game.setGameOwner("john123");
-        game.setPlayers(new ArrayList<>(Arrays.asList("john123")));
+        game.setPlayers(new ArrayList<>(Arrays.asList("john123", "jane123")));
 
         when(gamePersistence.findAllActiveGames()).thenReturn((List.of(game)));
         when(gamePersistence.saveGame(any())).thenReturn(game);

@@ -5,6 +5,6 @@ import com.justeattakeaway.codechallenge.model.player.dto.PlayerCreationRequest;
 import com.justeattakeaway.codechallenge.model.player.dto.PlayerCreationResponse;
 
 public interface PlayerService {
-    public PlayerCreationResponse createPlayer(PlayerCreationRequest playerCreationRequest);
-    public Player getPlayerByUniqueLoginName(String uniqueLoginName);
+    PlayerCreationResponse createPlayer(PlayerCreationRequest playerCreationRequest);
+    Player getPlayerByUniqueLoginName(String uniqueLoginName);
 }

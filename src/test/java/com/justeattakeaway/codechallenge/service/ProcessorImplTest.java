@@ -45,6 +45,6 @@ class ProcessorImplTest {
     @Test
     void processMessage_addNumberIsNotNull_invalidAddNumber() {
         Exception exception = assertThrows(RuntimeException.class, () -> processor.processMessage(10, 2));
-        assertEquals("Move not Allowed. You can add 1, 0, -1 only", exception.getMessage());
+        assertEquals("Move not Allowed. Make sure you passed 1, 0, -1 AND the result is divisible by 3.", exception.getMessage());
     }
 }

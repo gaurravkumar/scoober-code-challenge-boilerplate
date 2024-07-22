@@ -71,8 +71,11 @@ public class GameServiceImpl implements GameService {
         }
         var owner = playerService.getPlayerByUniqueLoginName(loginName);
         var otherPlayer = playerService.getPlayerByUniqueLoginName(game.getPlayers().stream().filter(p -> !p.equals(loginName)).findFirst().orElse(null));
+        if(otherPlayer == null) {
+            throw new RuntimeException("Wait for another player to join before starting the game.");
+        }
         messageSenderService.sendMessage(owner.getQueueName(), number);
-        listenerService.listenToQueue(owner.getQueueName(), gameId, owner.getUniqueLoginName());
+        listenerService.listenToQueue(otherPlayer.getQueueName(), gameId, otherPlayer.getUniqueLoginName());
         return number;
     }
 
@@ -81,8 +84,6 @@ public class GameServiceImpl implements GameService {
         if(player == null) {
             throw new RuntimeException("Player not found");
         }
-        rabbitMQConfig.createQueue(player.getQueueName());
-
         Game game = Game.builder()
                 .players(List.of(gameCreationRequest.getLoginName()))
                 .inputType(gameCreationRequest.getInputType())
@@ -107,8 +108,11 @@ public class GameServiceImpl implements GameService {
         // Get the game from MongoDB using gameId. Add the player from JoinGameRequest to the game. Save the game in MongoDB. Return the game object
         var game = gamePersistence.findAllActiveGames().stream().filter(g -> g.getId().equals(gameId)).findFirst().orElseThrow();
         if(game.getPlayers() != null && (game.getPlayers().size() == 2 || game.getPlayers().contains(joinGameRequest.getPlayer()))) {
+            logger.info("Players already in the game : "+ gameId + " ,Player :: "+joinGameRequest.getPlayer());
             return game;
         }
+        var otherPlayer = playerService.getPlayerByUniqueLoginName(game.getPlayers().stream().filter(p -> !p.equals(joinGameRequest.getPlayer())).findFirst().orElse(null));
+        listenerService.listenToQueue(otherPlayer.getQueueName(), gameId, otherPlayer.getUniqueLoginName());
         game.getPlayers().add(joinGameRequest.getPlayer());
         return gamePersistence.saveGame(game);
     }
@@ -135,7 +139,6 @@ public class GameServiceImpl implements GameService {
         var move = processor.processMessage(lastNumber, addNumber);
         var player = playerService.getPlayerByUniqueLoginName(loginName);
         messageSenderService.sendMessage(player.getQueueName(), move.getResult() / 3);
-        listenerService.listenToQueue(player.getQueueName(), gameId, player.getUniqueLoginName());
         moveResponse.setResult(move.getResult());
         moveResponse.setAdded(move.getAdded());
         moveResponse.setFinished(false);
