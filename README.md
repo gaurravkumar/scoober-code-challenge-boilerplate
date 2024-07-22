@@ -40,6 +40,9 @@ See [here](./example.md)
 
 
 ## How to test the application
+As per problem statement, if we want to switch between MANUAL and AUTOMATIC mode, we can do it by adding "number" as 
+query parameter in the start game API. 
+Also, we can add "addNumber" as query parameter in the make move API to make a MANUAL move in the game.
 - Open Postman
 - Use the following sequence
   - Add a Player .. say Player 1
