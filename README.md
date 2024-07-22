@@ -55,48 +55,77 @@ Also, we can add "addNumber" as query parameter in the make move API to make a M
 
 ## curl requests
 
+- Instruction :
+- Replace <PLAYER_NAME> with the name of the player you created.
+- Replace <PLAYER_UNIQUE_NAME> with the unique login name of the player you created.
+- Replace <GAME_ID> with the game id you created.
+- Replace <NUMBER> with the number you want to start the game.
+- Replace <ADD_NUMBER> with the number you want to add in the game.
+- GAME_ID can be retrieved from the response of create game API or get all games API.
+
 ### Add Player
-```curl --location 'localhost:8080/player/create' \
+```
+curl --location 'localhost:8080/player/create' \
 --header 'Content-Type: application/json' \
 --data '{
- "name": "Batman",
- "uniqueLoginName": "sp2"
+ "name": "<PLAYER_NAME>",
+ "uniqueLoginName": "<PLAYER_UNIQUE_NAME>"
     
 }' 
 ```
 
 ### Create Game
-```curl --location 'localhost:8080/game/create' \
+```
+curl --location 'localhost:8080/game/create' \
 --header 'Content-Type: application/json' \
 --data '{
-    "loginName": "sp1",
+    "loginName": "<PLAYER_UNIQUE_NAME>",
     "inputType": "MANUAL"
 }'
 ```
 ### Join Game
-```curl --location 'localhost:8080/joinGame/game/669e6a2edd602c78447542a1' \
+```
+curl --location 'localhost:8080/joinGame/game/<GAME_ID>' \
 --header 'Content-Type: application/json' \
 --data '{
-    "player": "sp2"
+    "player": "<PLAYER_UNIQUE_NAME>"
 }'
 ```
 
-### Start Game
-```curl --location 'localhost:8080/start/game/669e6a2edd602c78447542a1?number=17' \
+### Start Game MANUAL
+```
+curl --location 'localhost:8080/start/game/<GAME_ID>?number=<NUMBER>' \
 --header 'Content-Type: application/json' \
 --data '{
     
-    "playerUniqueName": "sp1"
+    "playerUniqueName": "<PLAYER_UNIQUE_NAME>"
 }'
 ```
 
-### Make Move
-```curl --location 'localhost:8080/makeMove/game/669e6a2edd602c78447542a1/player/sp1?addNumber=1' \
+### Start Game AUTOMATIC
+```
+curl --location 'localhost:8080/start/game/<GAME_ID>' \
+--header 'Content-Type: application/json' \
+--data '{
+    
+    "playerUniqueName": "<PLAYER_UNIQUE_NAME>"
+}'
+```
+
+### Make Move MANUAL
+```
+curl --location 'localhost:8080/makeMove/game/<GAME_ID>/player/<PLAYER_UNIQUE_NAME>?addNumber=<ADD_NUMBER>' \
+--data ''
+``` 
+### Make Move AUTOMATIC
+```
+curl --location 'localhost:8080/makeMove/game/<GAME_ID>/player/<PLAYER_UNIQUE_NAME>' \
 --data ''
 ``` 
 
 ### Get All Games
-```curl --location 'localhost:8080/getAllActiveGames' \
+```
+curl --location 'localhost:8080/getAllActiveGames' \
 --header 'Content-Type: application/json' \
 --data ''
 ```
