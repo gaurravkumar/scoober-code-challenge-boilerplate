@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Start Manual</title>
+</head>
+<body>
+<h1>Enter a number</h1>
+<form action="/startGame" method="post">
+    <label for="player1Name">Player 1 Name:</label><br>
+    <input type="text" id="player1Name" name="player1Name" required><br>
+    <label for="number">Number:</label><br>
+    <input type="text" id="number" name="number" required><br>
+    <label for="player2Name">Player 2 Name:</label><br>
+    <input type="text" id="player2Name" name="player2Name" required>
+    <input type="hidden" name="inputType" value="MANUAL"><br>
+    <button type="submit">Start</button>
+</form>
+</body>
+</html>
