@@ -106,7 +106,6 @@ class ScrooberGameControllerTest {
                 .andExpect(jsonPath("$.added").value(1));
     }
 
-    // Write test for createGame method...
     @Test
     void createGame() throws Exception {
         GameCreationRequest request = new GameCreationRequest();
