@@ -5,7 +5,9 @@ import com.justeattakeaway.codechallenge.model.game.Game;
 import com.justeattakeaway.codechallenge.model.game.dto.GameCreationRequest;
 import com.justeattakeaway.codechallenge.model.game.dto.GameCreationResponse;
 import com.justeattakeaway.codechallenge.model.game.dto.JoinGameRequest;
+import com.justeattakeaway.codechallenge.model.game.dto.JoinGameResponse;
 import com.justeattakeaway.codechallenge.model.game.dto.MoveResponse;
+import com.justeattakeaway.codechallenge.model.game.dto.ReadGameResponse;
 import com.justeattakeaway.codechallenge.repository.GamePersistence;
 import com.justeattakeaway.codechallenge.repository.GameProgressPersistence;
 import com.justeattakeaway.codechallenge.service.common.ListenerService;
@@ -14,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -71,7 +74,7 @@ public class GameServiceImpl implements GameService {
         }
         var owner = playerService.getPlayerByUniqueLoginName(loginName);
         var otherPlayer = playerService.getPlayerByUniqueLoginName(game.getPlayers().stream().filter(p -> !p.equals(loginName)).findFirst().orElse(null));
-        if(otherPlayer == null) {
+        if (otherPlayer == null) {
             throw new RuntimeException("Wait for another player to join before starting the game.");
         }
         messageSenderService.sendMessage(owner.getQueueName(), number);
@@ -81,7 +84,7 @@ public class GameServiceImpl implements GameService {
 
     public GameCreationResponse createGame(GameCreationRequest gameCreationRequest) {
         var player = playerService.getPlayerByUniqueLoginName(gameCreationRequest.getLoginName());
-        if(player == null) {
+        if (player == null) {
             throw new RuntimeException("Player not found");
         }
         Game game = Game.builder()
@@ -100,21 +103,45 @@ public class GameServiceImpl implements GameService {
                 .build();
     }
 
-    public List<Game> getAllActiveGames() {
-        return gamePersistence.findAllActiveGames();
+    public List<ReadGameResponse> getAllActiveGames() {
+        return getReadGameResponse(gamePersistence.findAllActiveGames());
     }
 
-    public Game joinGame(JoinGameRequest joinGameRequest, String gameId) {
-        // Get the game from MongoDB using gameId. Add the player from JoinGameRequest to the game. Save the game in MongoDB. Return the game object
+    private List<ReadGameResponse> getReadGameResponse(List<Game> allActiveGames) {
+        return allActiveGames != null && allActiveGames.size() > 0 ? allActiveGames.stream().map(game -> ReadGameResponse.builder()
+                .id(game.getId())
+                .players(game.getPlayers())
+                .numbers(game.getNumbers())
+                .gameOwner(game.getGameOwner())
+                .inputType(game.getInputType())
+                .finished(game.isFinished())
+                .build()).toList() : new ArrayList<>();
+    }
+
+    public JoinGameResponse joinGame(JoinGameRequest joinGameRequest, String gameId) {
+        // Get the game from MongoDB using gameId. Add the player from JoinGameRequest to the game. Save the game in MongoDB. Return the JoinGameResponse object
+
         var game = gamePersistence.findAllActiveGames().stream().filter(g -> g.getId().equals(gameId)).findFirst().orElseThrow();
-        if(game.getPlayers() != null && (game.getPlayers().size() == 2 || game.getPlayers().contains(joinGameRequest.getPlayer()))) {
-            logger.info("Players already in the game : "+ gameId + " ,Player :: "+joinGameRequest.getPlayer());
-            return game;
+        if (game.getPlayers() != null && (game.getPlayers().size() == 2 || game.getPlayers().contains(joinGameRequest.getPlayer()))) {
+            logger.info("Players already in the game : " + gameId + " ,Player :: " + joinGameRequest.getPlayer());
+            return getJoinGameResponse(game);
         }
         var otherPlayer = playerService.getPlayerByUniqueLoginName(game.getPlayers().stream().filter(p -> !p.equals(joinGameRequest.getPlayer())).findFirst().orElse(null));
         listenerService.listenToQueue(otherPlayer.getQueueName(), gameId, otherPlayer.getUniqueLoginName());
         game.getPlayers().add(joinGameRequest.getPlayer());
-        return gamePersistence.saveGame(game);
+        var persistenceResponse = gamePersistence.saveGame(game);
+        return getJoinGameResponse(persistenceResponse);
+    }
+
+    private JoinGameResponse getJoinGameResponse(Game game) {
+        return JoinGameResponse.builder()
+                .id(game.getId())
+                .players(game.getPlayers())
+                .numbers(game.getNumbers())
+                .gameOwner(game.getGameOwner())
+                .inputType(game.getInputType())
+                .finished(game.isFinished())
+                .build();
     }
 
     public MoveResponse makeMove(String gameId, String loginName, Integer addNumber) {

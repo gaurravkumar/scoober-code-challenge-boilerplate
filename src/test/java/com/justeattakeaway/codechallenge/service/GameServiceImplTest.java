@@ -7,7 +7,9 @@ import com.justeattakeaway.codechallenge.model.game.InputType;
 import com.justeattakeaway.codechallenge.model.game.dto.GameCreationRequest;
 import com.justeattakeaway.codechallenge.model.game.dto.GameCreationResponse;
 import com.justeattakeaway.codechallenge.model.game.dto.JoinGameRequest;
+import com.justeattakeaway.codechallenge.model.game.dto.JoinGameResponse;
 import com.justeattakeaway.codechallenge.model.game.dto.MoveResponse;
+import com.justeattakeaway.codechallenge.model.game.dto.ReadGameResponse;
 import com.justeattakeaway.codechallenge.model.player.Player;
 import com.justeattakeaway.codechallenge.repository.GamePersistence;
 import com.justeattakeaway.codechallenge.repository.GameProgressPersistence;
@@ -81,7 +83,7 @@ class GameServiceImplTest {
 
         when(gamePersistence.findAllActiveGames()).thenReturn(Collections.singletonList(game));
 
-        List<Game> games = gameService.getAllActiveGames();
+        List<ReadGameResponse> games = gameService.getAllActiveGames();
 
         assertNotNull(games);
         assertEquals(1, games.size());
@@ -154,7 +156,7 @@ class GameServiceImplTest {
 
         when(gamePersistence.findAllActiveGames()).thenReturn((List.of(game)));
         when(gamePersistence.saveGame(any())).thenReturn(game);
-        Game updatedGame = gameService.joinGame(request, "1");
+        JoinGameResponse updatedGame = gameService.joinGame(request, "1");
 
         assertNotNull(updatedGame);
         assertEquals(2, updatedGame.getPlayers().size());

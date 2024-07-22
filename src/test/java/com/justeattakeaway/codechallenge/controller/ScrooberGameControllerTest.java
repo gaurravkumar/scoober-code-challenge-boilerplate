@@ -45,9 +45,9 @@ class ScrooberGameControllerTest {
 
     @Test
     void findAllGames() throws Exception {
-        Game game = new Game();
-        game.setId("1");
-        game.setGameOwner("john123");
+        ReadGameResponse game = ReadGameResponse.builder()
+                .id("1")
+                .gameOwner("john123").build();
 
         when(gameService.getAllActiveGames()).thenReturn(Collections.singletonList(game));
 
@@ -62,9 +62,11 @@ class ScrooberGameControllerTest {
         JoinGameRequest request = new JoinGameRequest();
         request.setPlayer("john123");
 
-        Game game = new Game();
-        game.setId("1");
-        game.setGameOwner("john123");
+        JoinGameResponse game = JoinGameResponse.builder()
+                .id("1")
+                .gameOwner("john123")
+                .build();
+
 
         when(gameService.joinGame(request, "1")).thenReturn(game);
 

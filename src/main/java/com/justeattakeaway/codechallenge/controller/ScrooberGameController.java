@@ -1,12 +1,13 @@
 package com.justeattakeaway.codechallenge.controller;
 
-import com.justeattakeaway.codechallenge.model.game.Game;
 import com.justeattakeaway.codechallenge.model.game.dto.GameCreationRequest;
 import com.justeattakeaway.codechallenge.model.game.dto.GameCreationResponse;
 import com.justeattakeaway.codechallenge.model.game.dto.JoinGameRequest;
+import com.justeattakeaway.codechallenge.model.game.dto.JoinGameResponse;
 import com.justeattakeaway.codechallenge.model.game.dto.MoveResponse;
+import com.justeattakeaway.codechallenge.model.game.dto.ReadGameResponse;
 import com.justeattakeaway.codechallenge.model.game.dto.StartRequest;
-import com.justeattakeaway.codechallenge.service.GameServiceImpl;
+import com.justeattakeaway.codechallenge.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,10 @@ import java.util.List;
 @RestController
 public class ScrooberGameController {
 
-    private GameServiceImpl gameService;
+    private GameService gameService;
 
     @Autowired
-    ScrooberGameController(GameServiceImpl gameService) {
+    ScrooberGameController(GameService gameService) {
         this.gameService = gameService;
 
     }
@@ -41,12 +42,12 @@ public class ScrooberGameController {
     }
 
     @GetMapping("/getAllActiveGames")
-    public ResponseEntity<List<Game>> findAllGames() {
+    public ResponseEntity<List<ReadGameResponse>> findAllGames() {
         return new ResponseEntity<>(gameService.getAllActiveGames(), HttpStatus.OK);
     }
 
     @PostMapping("/joinGame/game/{gameId}")
-    public ResponseEntity<Game> joinGame(@RequestBody JoinGameRequest joinGameRequest, @PathVariable String gameId) {
+    public ResponseEntity<JoinGameResponse> joinGame(@RequestBody JoinGameRequest joinGameRequest, @PathVariable String gameId) {
         return new ResponseEntity<>(gameService.joinGame(joinGameRequest, gameId), HttpStatus.OK);
     }
 

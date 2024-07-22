@@ -97,3 +97,22 @@ See [here](./example.md)
 --header 'Content-Type: application/json' \
 --data ''
 ```
+
+
+## Class Explanation
+
+- `GameServiceImpl: This is a service class that implements the GameService interface. It contains business logic related to game operations, such as starting a game, creating a game, getting all active games, joining a game, and making a move in a game.`  
+- `PlayerServiceImpl: This is a service class that implements the PlayerService interface. It contains business logic related to player operations, such as creating a player and getting a player by their unique login name.`  
+- `ProcessorImpl: This is a class that implements the Processor interface. It contains logic for processing a message in the game.`  
+- `ScrooberPlayerController: This is a controller class that handles HTTP requests related to player operations. It uses the PlayerServiceImpl to perform these operations.`  
+- `ScrooberGameController: This is a controller class that handles HTTP requests related to game operations. It uses the GameServiceImpl to perform these operations.`  
+- `MessageSenderService: This is a service class that sends messages to a RabbitMQ queue.`  
+- `ListenerService: This is a service class that listens to a RabbitMQ queue for messages.`  
+- `PlayerPersistence: This is a class that interacts with the PlayerRepository to perform database operations related to players.`  
+- `GamePersistence: This is a class that interacts with the GameRepository to perform database operations related to games.`  
+- `GameProgressPersistence: This is a class that interacts with the GameProgressRepository to perform database operations related to game progress.`  
+- `PlayerRepository: This is an interface that extends MongoRepository. It is used to perform CRUD operations on the Player model.`  
+- `GameRepository: This is an interface that extends MongoRepository. It is used to perform CRUD operations on the Game model.`  
+- `GameProgressRepository: This is an interface that extends MongoRepository. It is used to perform CRUD operations on the GameProgress model.`  
+- `RabbitMQConfig: This is a configuration class that sets up RabbitMQ, including creating queues and setting up the RabbitTemplate.`  
+- `Each of these classes is annotated with a Spring stereotype annotation (@Service, @Controller, @Repository, @Configuration), which indicates its role in the application and enables Spring to detect and manage it as a bean in the Spring application context.`
