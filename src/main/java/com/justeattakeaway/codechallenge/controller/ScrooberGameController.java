@@ -40,7 +40,7 @@ public class ScrooberGameController {
 
     }
 
-    @GetMapping("getAllActiveGames")
+    @GetMapping("/getAllActiveGames")
     public ResponseEntity<List<Game>> findAllGames() {
         return new ResponseEntity<>(gameService.getAllActiveGames(), HttpStatus.OK);
     }
